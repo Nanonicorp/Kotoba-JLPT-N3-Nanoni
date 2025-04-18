@@ -1,22 +1,33 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Variabel global
     let vocabularyData = [];
+    let filteredData = [];
     let currentWeek = 1;
-    let currentDay = 1; // Diasumsikan 'halaman' di nama file = 'hari' di dropdown
+    let currentDay = 1;
+    let currentPage = 1;
     let itemsPerPage = 20;
+    let totalPages = 1;
     
     // Elemen UI
     const weekSelector = document.getElementById('weekSelector');
     const daySelector = document.getElementById('daySelector');
     const itemsPerPageSelect = document.getElementById('itemsPerPage');
-    
+    const searchInput = document.getElementById('searchInput');
+    const prevPageBtn = document.getElementById('prevPage');
+    const nextPageBtn = document.getElementById('nextPage');
+    const pageInfo = document.getElementById('pageInfo');
+    const errorMessage = document.getElementById('errorMessage');
+    const burger = document.getElementById('burger');
+    const navLinks = document.querySelector('.nav-links');
+
     // Inisialisasi
     initEventListeners();
-    loadVocabularyData(); // Muat data awal
+    loadVocabularyData();
 
     // Fungsi utama - Memuat data dari file JSON
     async function loadVocabularyData() {
         try {
+            errorMessage.style.display = 'none';
             const filename = `data/kotoba-minggu${currentWeek}-halaman${currentDay}.json`;
             const response = await fetch(filename);
             
@@ -25,6 +36,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             vocabularyData = await response.json();
+            filteredData = [...vocabularyData];
+            
+            // Simpan ke cache
+            const cacheKey = `week${currentWeek}day${currentDay}`;
+            localStorage.setItem(cacheKey, JSON.stringify(vocabularyData));
+            
+            // Reset pencarian dan halaman
+            searchInput.value = '';
+            currentPage = 1;
+            updatePagination();
             renderTable();
         } catch (error) {
             console.error("Error:", error);
@@ -37,25 +58,91 @@ document.addEventListener('DOMContentLoaded', function() {
         const tbody = document.querySelector('#vocabularyTable tbody');
         tbody.innerHTML = '';
         
-        if (vocabularyData.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5">Tidak ada data</td></tr>';
+        if (filteredData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="no-data">Tidak ada data</td></tr>';
             return;
         }
         
-        // Potong data sesuai itemsPerPage (jika ingin pagination client-side)
-        const displayedData = vocabularyData.slice(0, itemsPerPage);
+        const paginatedData = getPaginatedData();
         
-        displayedData.forEach((item, index) => {
+        paginatedData.forEach((item, index) => {
+            const globalIndex = (currentPage - 1) * itemsPerPage + index + 1;
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${index + 1}</td>
+                <td>${globalIndex}</td>
                 <td>${item.kotoba || '-'}</td>
                 <td>${item.kana || '-'}</td>
                 <td>${item.arti || '-'}</td>
-                <td><i class="fas fa-eye"></i></td>
+                <td><i class="fas fa-eye action-btn" title="Lihat detail"></i></td>
             `;
             tbody.appendChild(row);
         });
+    }
+
+    // Dapatkan data pagination
+    function getPaginatedData() {
+        const start = (currentPage - 1) * itemsPerPage;
+        return filteredData.slice(start, start + itemsPerPage);
+    }
+
+    // Update informasi pagination
+    function updatePagination() {
+        totalPages = Math.ceil(filteredData.length / itemsPerPage);
+        pageInfo.textContent = `Halaman ${currentPage} dari ${totalPages}`;
+        prevPageBtn.disabled = currentPage <= 1;
+        nextPageBtn.disabled = currentPage >= totalPages;
+    }
+
+    // Filter data berdasarkan pencarian
+    function filterData(keyword) {
+        if (!keyword) {
+            filteredData = [...vocabularyData];
+        } else {
+            const lowerKeyword = keyword.toLowerCase();
+            filteredData = vocabularyData.filter(item => 
+                (item.kotoba && item.kotoba.toLowerCase().includes(lowerKeyword)) ||
+                (item.kana && item.kana.toLowerCase().includes(lowerKeyword))
+            );
+        }
+        
+        currentPage = 1;
+        updatePagination();
+        renderTable();
+    }
+
+    // Toggle kolom
+    function setupColumnToggles() {
+        document.querySelectorAll('.column-toggle').forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                const column = e.target.dataset.column;
+                const columnIndex = getColumnIndex(column);
+                
+                document.querySelectorAll(`tbody td:nth-child(${columnIndex})`).forEach(cell => {
+                    cell.classList.toggle('blurred');
+                });
+                
+                // Ganti ikon
+                e.target.classList.toggle('fa-eye');
+                e.target.classList.toggle('fa-eye-slash');
+            });
+        });
+    }
+
+    // Dapatkan index kolom berdasarkan nama
+    function getColumnIndex(columnName) {
+        const columns = {
+            'kotoba': 2,
+            'kana': 3,
+            'arti': 4
+        };
+        return columns[columnName] || 0;
+    }
+
+    // Tampilkan error
+    function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
+        document.querySelector('#vocabularyTable tbody').innerHTML = '';
     }
 
     // Event Listeners
@@ -63,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Dropdown minggu
         weekSelector.addEventListener('change', () => {
             currentWeek = parseInt(weekSelector.value);
-            currentDay = 1; // Reset ke hari 1 saat minggu berubah
+            currentDay = 1;
             daySelector.value = 1;
             loadVocabularyData();
         });
@@ -77,12 +164,40 @@ document.addEventListener('DOMContentLoaded', function() {
         // Dropdown items per page
         itemsPerPageSelect.addEventListener('change', () => {
             itemsPerPage = parseInt(itemsPerPageSelect.value);
-            renderTable(); // Render ulang dengan jumlah item baru
+            currentPage = 1;
+            updatePagination();
+            renderTable();
         });
-    }
 
-    function showError(message) {
-        const tbody = document.querySelector('#vocabularyTable tbody');
-        tbody.innerHTML = `<tr><td colspan="5" class="error">${message}</td></tr>`;
+        // Pencarian
+        searchInput.addEventListener('input', (e) => {
+            filterData(e.target.value);
+        });
+
+        // Pagination
+        prevPageBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                updatePagination();
+                renderTable();
+            }
+        });
+
+        nextPageBtn.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                updatePagination();
+                renderTable();
+            }
+        });
+
+        // Toggle menu mobile
+        burger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            burger.classList.toggle('active');
+        });
+
+        // Setup column toggles setelah render tabel
+        setTimeout(setupColumnToggles, 0);
     }
 });
