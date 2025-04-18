@@ -84,62 +84,64 @@ function toggleRowBlur(index) {
     
     if (rowIndex >= 0 && rowIndex < rows.length) {
         const cells = rows[rowIndex].querySelectorAll('td');
-        // Skip kolom No (0) dan Aksi (4)
         for (let i = 1; i < 4; i++) {
             cells[i].classList.toggle('blurred');
         }
     }
 }
 
-// Event listeners untuk memilih jumlah item per halaman
+// Fungsi scroll ke tabel vocabulary
+function scrollToVocabulary() {
+    const vocabSection = document.getElementById('vocabulary');
+    if (vocabSection) {
+        window.scrollTo({
+            top: vocabSection.offsetTop - 80,
+            behavior: 'smooth'
+        });
+    }
+}
+
+// Event listeners
 document.getElementById('itemsPerPage').addEventListener('change', function() {
     itemsPerPage = parseInt(this.value);
-    currentPage = 1; // Reset ke halaman pertama
+    currentPage = 1;
     loadVocabulary();
 });
 
-// Event listeners untuk tombol "Sebelumnya"
 document.getElementById('prevPage').addEventListener('click', function() {
     if (currentPage > 1) {
         currentPage--;
-        loadVocabulary(); // Memuat halaman yang baru
-        renderTable(); // Merender tabel
-        window.scrollTo({top: document.getElementById('vocabulary').offsetTop - 80, behavior: 'smooth'});
+        loadVocabulary();
+        scrollToVocabulary();
     }
 });
 
-// Event listeners untuk tombol "Berikutnya"
 document.getElementById('nextPage').addEventListener('click', function() {
     if (currentPage < Math.ceil(vocabularyData.length / itemsPerPage)) {
         currentPage++;
-        loadVocabulary(); // Memuat halaman yang baru
-        renderTable(); // Merender tabel
-        window.scrollTo({top: document.getElementById('vocabulary').offsetTop - 80, behavior: 'smooth'});
+        loadVocabulary();
+        scrollToVocabulary();
     }
 });
 
-// Event listeners untuk memilih minggu
 document.getElementById('weekSelector').addEventListener('change', function() {
     currentWeek = parseInt(this.value);
-    currentPage = 1; // Reset ke halaman pertama setiap minggu berubah
-    loadVocabulary(); // Memuat data kosakata untuk minggu yang dipilih
+    currentPage = 1;
+    loadVocabulary();
 });
 
-// Event listener untuk toggle kolom
 document.addEventListener('click', function(e) {
     if (e.target.classList.contains('column-toggle')) {
         const column = e.target.getAttribute('data-column');
         toggleColumnBlur(column);
     }
-    
-    // Toggle baris
+
     if (e.target.classList.contains('toggle-blur')) {
         const index = parseInt(e.target.getAttribute('data-index'));
         toggleRowBlur(index);
     }
 });
 
-// Smooth scroll untuk navigasi
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
         e.preventDefault();
@@ -155,10 +157,10 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Animasi fade-in
+// Fade-in animasi dan load data saat halaman siap
 document.addEventListener('DOMContentLoaded', function() {
     const fadeElements = document.querySelectorAll('.fade-in');
-    
+
     const fadeInObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -167,17 +169,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }, { threshold: 0.1 });
-    
+
     fadeElements.forEach(el => {
         el.style.opacity = 0;
         el.style.transform = 'translateY(20px)';
         el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
         fadeInObserver.observe(el);
     });
-    
-    // Muat data kosakata
-    loadVocabulary();
-});
-document.addEventListener('DOMContentLoaded', function() {
+
+    // Muat data awal
     loadVocabulary();
 });
