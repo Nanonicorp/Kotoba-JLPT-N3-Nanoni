@@ -1,5 +1,5 @@
-// Variabel global
-let currentPage = 1;
+let currentWeek = 1; // Minggu default
+let currentPage = 1; // Halaman default
 let itemsPerPage = 20;
 let vocabularyData = [];
 let blurredColumns = {
@@ -8,23 +8,14 @@ let blurredColumns = {
     arti: false
 };
 
-// Fungsi untuk memuat data kosakata
+// Fungsi untuk memuat data kosakata berdasarkan minggu dan halaman
 async function loadVocabulary() {
     try {
-        const response = await fetch('data/vocabulary.json');
+        const response = await fetch(`data/kotoba-minggu${currentWeek}-halaman${currentPage}.json`);
         vocabularyData = await response.json();
         renderTable();
     } catch (error) {
         console.error('Error loading vocabulary data:', error);
-        // Fallback ke data contoh jika ada error
-        vocabularyData = [
-            {kotoba: "言葉", kana: "ことば", arti: "kata, bahasa"},
-            {kotoba: "勉強", kana: "べんきょう", arti: "belajar"},
-            {kotoba: "大切", kana: "たいせつ", arti: "penting"},
-            {kotoba: "約束", kana: "やくそく", arti: "janji"},
-            {kotoba: "準備", kana: "じゅんび", arti: "persiapan"}
-        ];
-        renderTable();
     }
 }
 
@@ -100,31 +91,42 @@ function toggleRowBlur(index) {
     }
 }
 
-// Event listeners
+// Event listeners untuk memilih jumlah item per halaman
 document.getElementById('itemsPerPage').addEventListener('change', function() {
     itemsPerPage = parseInt(this.value);
-    currentPage = 1;
-    renderTable();
+    currentPage = 1; // Reset ke halaman pertama
+    loadVocabulary();
 });
 
+// Event listeners untuk tombol "Sebelumnya"
 document.getElementById('prevPage').addEventListener('click', function() {
     if (currentPage > 1) {
         currentPage--;
-        renderTable();
+        loadVocabulary(); // Memuat halaman yang baru
+        renderTable(); // Merender tabel
         window.scrollTo({top: document.getElementById('vocabulary').offsetTop - 80, behavior: 'smooth'});
     }
 });
 
+// Event listeners untuk tombol "Berikutnya"
 document.getElementById('nextPage').addEventListener('click', function() {
     if (currentPage < Math.ceil(vocabularyData.length / itemsPerPage)) {
         currentPage++;
-        renderTable();
+        loadVocabulary(); // Memuat halaman yang baru
+        renderTable(); // Merender tabel
         window.scrollTo({top: document.getElementById('vocabulary').offsetTop - 80, behavior: 'smooth'});
     }
 });
 
+// Event listeners untuk memilih minggu
+document.getElementById('weekSelect').addEventListener('change', function() {
+    currentWeek = parseInt(this.value);
+    currentPage = 1; // Reset ke halaman pertama setiap minggu berubah
+    loadVocabulary(); // Memuat data kosakata untuk minggu yang dipilih
+});
+
+// Event listener untuk toggle kolom
 document.addEventListener('click', function(e) {
-    // Toggle kolom
     if (e.target.classList.contains('column-toggle')) {
         const column = e.target.getAttribute('data-column');
         toggleColumnBlur(column);
