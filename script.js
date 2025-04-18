@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     // Variabel global
     let vocabularyData = [];
     let filteredData = [];
@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
     initEventListeners();
     loadVocabularyData();
 
+    // Fungsi utama - Memuat data dari file JSON
     async function loadVocabularyData() {
         try {
             errorMessage.style.display = 'none';
@@ -50,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Render tabel dengan pagination
     function renderTable() {
         const tbody = document.querySelector('#vocabularyTable tbody');
         tbody.innerHTML = '';
@@ -69,37 +71,38 @@ document.addEventListener('DOMContentLoaded', function () {
                 <td>${item.kotoba || '-'}</td>
                 <td>${item.kana || '-'}</td>
                 <td>${item.arti || '-'}</td>
-                <td><i class="fas fa-eye action-btn" title="Lihat detail"></i></td>
+                <td><i class="fas fa-eye action-btn" title="Sembunyikan baris"></i></td>
             `;
             tbody.appendChild(row);
         });
 
-        setupColumnToggles();
-        setupActionButtons();
-
-        // Tambahkan ini di bagian akhir renderTable()
-document.querySelectorAll('.action-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const row = btn.closest('tr');
-        const cells = row.querySelectorAll('td');
-
-        // Mulai dari index 1 karena index 0 adalah kolom No
-        for (let i = 1; i <= 3; i++) {
-            cells[i].classList.toggle('blurred');
-        }
-
-        // Toggle icon
-        btn.classList.toggle('fa-eye');
-        btn.classList.toggle('fa-eye-slash');
-    });
-});
+        setupActionButtons();  // Tambahkan listener untuk tombol aksi di baris
     }
 
+    // Tambahkan listener ke ikon aksi (mata) di tiap baris
+    function setupActionButtons() {
+        document.querySelectorAll('.action-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const row = btn.closest('tr');
+                const cells = row.querySelectorAll('td');
+
+                for (let i = 1; i <= 3; i++) {
+                    cells[i].classList.toggle('blurred');
+                }
+
+                btn.classList.toggle('fa-eye');
+                btn.classList.toggle('fa-eye-slash');
+            });
+        });
+    }
+
+    // Dapatkan data pagination
     function getPaginatedData() {
         const start = (currentPage - 1) * itemsPerPage;
         return filteredData.slice(start, start + itemsPerPage);
     }
 
+    // Update informasi pagination
     function updatePagination() {
         totalPages = Math.ceil(filteredData.length / itemsPerPage);
         pageInfo.textContent = `Halaman ${currentPage} dari ${totalPages}`;
@@ -107,6 +110,7 @@ document.querySelectorAll('.action-btn').forEach(btn => {
         nextPageBtn.disabled = currentPage >= totalPages;
     }
 
+    // Filter data berdasarkan pencarian
     function filterData(keyword) {
         if (!keyword) {
             filteredData = [...vocabularyData];
@@ -123,6 +127,7 @@ document.querySelectorAll('.action-btn').forEach(btn => {
         renderTable();
     }
 
+    // Toggle kolom dari header
     function setupColumnToggles() {
         document.querySelectorAll('.column-toggle').forEach(icon => {
             icon.addEventListener('click', (e) => {
@@ -135,27 +140,6 @@ document.querySelectorAll('.action-btn').forEach(btn => {
 
                 e.target.classList.toggle('fa-eye');
                 e.target.classList.toggle('fa-eye-slash');
-            });
-        });
-    }
-
-    function setupActionButtons() {
-        document.querySelectorAll('.action-btn').forEach(icon => {
-            icon.addEventListener('click', () => {
-                const row = icon.closest('tr');
-                const allRows = document.querySelectorAll('#vocabularyTable tbody tr');
-
-                allRows.forEach(r => {
-                    const cells = r.querySelectorAll('td');
-                    cells.forEach((cell, index) => {
-                        if (index > 0) cell.classList.remove('blurred');
-                    });
-                });
-
-                const cells = row.querySelectorAll('td');
-                cells.forEach((cell, index) => {
-                    if (index > 0) cell.classList.add('blurred');
-                });
             });
         });
     }
@@ -175,6 +159,7 @@ document.querySelectorAll('.action-btn').forEach(btn => {
         document.querySelector('#vocabularyTable tbody').innerHTML = '';
     }
 
+    // Event Listeners
     function initEventListeners() {
         weekSelector.addEventListener('change', () => {
             currentWeek = parseInt(weekSelector.value);
@@ -219,5 +204,8 @@ document.querySelectorAll('.action-btn').forEach(btn => {
             navLinks.classList.toggle('active');
             burger.classList.toggle('active');
         });
+
+        // Toggle header kolom
+        setupColumnToggles();
     }
 });
