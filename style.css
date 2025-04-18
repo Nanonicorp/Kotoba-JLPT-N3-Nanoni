@@ -24,6 +24,19 @@ body {
     line-height: 1.6;
 }
 
+.burger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 5px;
+}
+
+.burger span {
+    width: 25px;
+    height: 3px;
+    background-color: var(--dark);
+    transition: all 0.3s ease;
+}
 .container {
     width: 90%;
     max-width: 1200px;
@@ -328,8 +341,20 @@ footer {
         z-index: 999;
     }
 
+    .burger {
+        display: flex;
+    }
+
     .nav-links.active {
         display: flex;
+        flex-direction: column;
+        background-color: white;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        left: 0;
+        padding: 20px;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
     }
     
     .hero h1 {
