@@ -340,4 +340,37 @@ footer {
         flex-direction: column;
         gap: 10px;
     }
+
+    /* Atur lebar kolom spesifik untuk mobile */
+    #vocabularyTable th:nth-child(1), 
+    #vocabularyTable td:nth-child(1) {
+        width: 50px; /* Lebar kolom No */
+    }
+    
+    #vocabularyTable th:nth-child(2), 
+    #vocabularyTable td:nth-child(2) {
+        width: 100px; /* Lebar kolom Kotoba */
+    }
+    
+    #vocabularyTable th:nth-child(3), 
+    #vocabularyTable td:nth-child(3) {
+        width: 100px; /* Lebar kolom Kana */
+    }
+    
+    #vocabularyTable th:nth-child(4), 
+    #vocabularyTable td:nth-child(4) {
+        width: 120px; /* Lebar kolom Arti */
+    }
+    
+    #vocabularyTable th:nth-child(5), 
+    #vocabularyTable td:nth-child(5) {
+        width: 60px; /* Lebar kolom Aksi */
+    }
+    
+    /* Tambahkan ini agar teks tidak overflow */
+    #vocabularyTable td {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
