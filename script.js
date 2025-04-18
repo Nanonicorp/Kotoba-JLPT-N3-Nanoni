@@ -178,3 +178,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Muat data kosakata
     loadVocabulary();
 });
+document.addEventListener('DOMContentLoaded', function() {
+    loadVocabulary();
+});
