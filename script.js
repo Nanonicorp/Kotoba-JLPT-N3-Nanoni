@@ -1,203 +1,182 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Variabel global
-    let vocabularyData = [];
-    let filteredData = [];
-    let currentWeek = 1;
-    let currentDay = 1;
-    let currentPage = 1;
-    let itemsPerPage = 20;
-    let totalPages = 1;
-    
-    // Elemen UI
-    const weekSelector = document.getElementById('weekSelector');
-    const daySelector = document.getElementById('daySelector');
-    const itemsPerPageSelect = document.getElementById('itemsPerPage');
-    const searchInput = document.getElementById('searchInput');
-    const prevPageBtn = document.getElementById('prevPage');
-    const nextPageBtn = document.getElementById('nextPage');
-    const pageInfo = document.getElementById('pageInfo');
-    const errorMessage = document.getElementById('errorMessage');
-    const burger = document.getElementById('burger');
-    const navLinks = document.querySelector('.nav-links');
+let currentWeek = 1; // Minggu default
+let currentPage = 1; // Halaman default
+let itemsPerPage = 20;
+let vocabularyData = [];
+let blurredColumns = {
+    kotoba: false,
+    kana: false,
+    arti: false
+};
 
-    // Inisialisasi
-    initEventListeners();
-    loadVocabularyData();
-
-    // Fungsi utama - Memuat data dari file JSON
-    async function loadVocabularyData() {
-        try {
-            errorMessage.style.display = 'none';
-            const filename = `data/kotoba-minggu${currentWeek}-halaman${currentDay}.json`;
-            const response = await fetch(filename);
-            
-            if (!response.ok) {
-                throw new Error(`Data tidak ditemukan untuk Minggu ${currentWeek} Hari ${currentDay}`);
-            }
-            
-            vocabularyData = await response.json();
-            filteredData = [...vocabularyData];
-            
-            // Simpan ke cache
-            const cacheKey = `week${currentWeek}day${currentDay}`;
-            localStorage.setItem(cacheKey, JSON.stringify(vocabularyData));
-            
-            // Reset pencarian dan halaman
-            searchInput.value = '';
-            currentPage = 1;
-            updatePagination();
-            renderTable();
-        } catch (error) {
-            console.error("Error:", error);
-            showError(error.message);
-        }
-    }
-
-    // Render tabel dengan pagination
-    function renderTable() {
-        const tbody = document.querySelector('#vocabularyTable tbody');
-        tbody.innerHTML = '';
-        
-        if (filteredData.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="no-data">Tidak ada data</td></tr>';
-            return;
-        }
-        
-        const paginatedData = getPaginatedData();
-        
-        paginatedData.forEach((item, index) => {
-            const globalIndex = (currentPage - 1) * itemsPerPage + index + 1;
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${globalIndex}</td>
-                <td>${item.kotoba || '-'}</td>
-                <td>${item.kana || '-'}</td>
-                <td>${item.arti || '-'}</td>
-                <td><i class="fas fa-eye action-btn" title="Lihat detail"></i></td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
-
-    // Dapatkan data pagination
-    function getPaginatedData() {
-        const start = (currentPage - 1) * itemsPerPage;
-        return filteredData.slice(start, start + itemsPerPage);
-    }
-
-    // Update informasi pagination
-    function updatePagination() {
-        totalPages = Math.ceil(filteredData.length / itemsPerPage);
-        pageInfo.textContent = `Halaman ${currentPage} dari ${totalPages}`;
-        prevPageBtn.disabled = currentPage <= 1;
-        nextPageBtn.disabled = currentPage >= totalPages;
-    }
-
-    // Filter data berdasarkan pencarian
-    function filterData(keyword) {
-        if (!keyword) {
-            filteredData = [...vocabularyData];
-        } else {
-            const lowerKeyword = keyword.toLowerCase();
-            filteredData = vocabularyData.filter(item => 
-                (item.kotoba && item.kotoba.toLowerCase().includes(lowerKeyword)) ||
-                (item.kana && item.kana.toLowerCase().includes(lowerKeyword))
-            );
-        }
-        
-        currentPage = 1;
-        updatePagination();
+// Fungsi untuk memuat data kosakata berdasarkan minggu dan halaman
+async function loadVocabulary() {
+    try {
+        const response = await fetch(`data/kotoba-minggu${currentWeek}-halaman${currentPage}.json`);
+        vocabularyData = await response.json();
         renderTable();
+    } catch (error) {
+        console.error('Error loading vocabulary data:', error);
+    }
+}
+
+// Fungsi untuk merender tabel
+function renderTable() {
+    const tableBody = document.querySelector('#vocabularyTable tbody');
+    tableBody.innerHTML = '';
+    
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentItems = vocabularyData.slice(startIndex, endIndex);
+    
+    currentItems.forEach((item, index) => {
+        const row = document.createElement('tr');
+        const globalIndex = startIndex + index;
+        
+        row.innerHTML = `
+            <td>${globalIndex + 1}</td>
+            <td class="${blurredColumns.kotoba ? 'blurred' : ''}">${item.kotoba}</td>
+            <td class="${blurredColumns.kana ? 'blurred' : ''}">${item.kana}</td>
+            <td class="${blurredColumns.arti ? 'blurred' : ''}">${item.arti}</td>
+            <td><i class="fas fa-eye toggle-blur" data-index="${globalIndex}" title="Blur baris ini"></i></td>
+        `;
+        
+        tableBody.appendChild(row);
+    });
+    
+    // Update info halaman
+    document.getElementById('pageInfo').textContent = `Halaman ${currentPage} dari ${Math.ceil(vocabularyData.length / itemsPerPage)}`;
+    
+    // Nonaktifkan tombol sebelumnya jika di halaman pertama
+    document.getElementById('prevPage').disabled = currentPage === 1;
+    
+    // Nonaktifkan tombol berikutnya jika di halaman terakhir
+    document.getElementById('nextPage').disabled = currentPage === Math.ceil(vocabularyData.length / itemsPerPage);
+    
+    // Update icon kolom toggle
+    updateColumnToggleIcons();
+}
+
+// Fungsi untuk update icon toggle kolom
+function updateColumnToggleIcons() {
+    const toggles = document.querySelectorAll('.column-toggle');
+    toggles.forEach(toggle => {
+        const column = toggle.getAttribute('data-column');
+        if (blurredColumns[column]) {
+            toggle.classList.remove('fa-eye');
+            toggle.classList.add('fa-eye-slash');
+        } else {
+            toggle.classList.remove('fa-eye-slash');
+            toggle.classList.add('fa-eye');
+        }
+    });
+}
+
+// Fungsi untuk toggle blur kolom
+function toggleColumnBlur(column) {
+    blurredColumns[column] = !blurredColumns[column];
+    renderTable();
+}
+
+// Fungsi untuk toggle blur baris tertentu
+function toggleRowBlur(index) {
+    const rows = document.querySelectorAll('#vocabularyTable tbody tr');
+    const rowIndex = index - ((currentPage - 1) * itemsPerPage);
+    
+    if (rowIndex >= 0 && rowIndex < rows.length) {
+        const cells = rows[rowIndex].querySelectorAll('td');
+        for (let i = 1; i < 4; i++) {
+            cells[i].classList.toggle('blurred');
+        }
+    }
+}
+
+// Fungsi scroll ke tabel vocabulary
+function scrollToVocabulary() {
+    const vocabSection = document.getElementById('vocabulary');
+    if (vocabSection) {
+        window.scrollTo({
+            top: vocabSection.offsetTop - 80,
+            behavior: 'smooth'
+        });
+    }
+}
+
+// Event listeners
+document.getElementById('itemsPerPage').addEventListener('change', function() {
+    itemsPerPage = parseInt(this.value);
+    currentPage = 1;
+    loadVocabulary();
+});
+
+document.getElementById('prevPage').addEventListener('click', function() {
+    if (currentPage > 1) {
+        currentPage--;
+        loadVocabulary();
+        scrollToVocabulary();
+    }
+});
+
+document.getElementById('nextPage').addEventListener('click', function() {
+    if (currentPage < Math.ceil(vocabularyData.length / itemsPerPage)) {
+        currentPage++;
+        loadVocabulary();
+        scrollToVocabulary();
+    }
+});
+
+document.getElementById('weekSelector').addEventListener('change', function() {
+    currentWeek = parseInt(this.value);
+    currentPage = 1;
+    loadVocabulary();
+});
+
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('column-toggle')) {
+        const column = e.target.getAttribute('data-column');
+        toggleColumnBlur(column);
     }
 
-    // Toggle kolom
-    function setupColumnToggles() {
-        document.querySelectorAll('.column-toggle').forEach(icon => {
-            icon.addEventListener('click', (e) => {
-                const column = e.target.dataset.column;
-                const columnIndex = getColumnIndex(column);
-                
-                document.querySelectorAll(`tbody td:nth-child(${columnIndex})`).forEach(cell => {
-                    cell.classList.toggle('blurred');
-                });
-                
-                // Ganti ikon
-                e.target.classList.toggle('fa-eye');
-                e.target.classList.toggle('fa-eye-slash');
+    if (e.target.classList.contains('toggle-blur')) {
+        const index = parseInt(e.target.getAttribute('data-index'));
+        toggleRowBlur(index);
+    }
+});
+
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        
+        if (targetElement) {
+            window.scrollTo({
+                top: targetElement.offsetTop - 80,
+                behavior: 'smooth'
             });
-        });
-    }
+        }
+    });
+});
 
-    // Dapatkan index kolom berdasarkan nama
-    function getColumnIndex(columnName) {
-        const columns = {
-            'kotoba': 2,
-            'kana': 3,
-            'arti': 4
-        };
-        return columns[columnName] || 0;
-    }
+// Fade-in animasi dan load data saat halaman siap
+document.addEventListener('DOMContentLoaded', function() {
+    const fadeElements = document.querySelectorAll('.fade-in');
 
-    // Tampilkan error
-    function showError(message) {
-        errorMessage.textContent = message;
-        errorMessage.style.display = 'block';
-        document.querySelector('#vocabularyTable tbody').innerHTML = '';
-    }
-
-    // Event Listeners
-    function initEventListeners() {
-        // Dropdown minggu
-        weekSelector.addEventListener('change', () => {
-            currentWeek = parseInt(weekSelector.value);
-            currentDay = 1;
-            daySelector.value = 1;
-            loadVocabularyData();
-        });
-
-        // Dropdown hari
-        daySelector.addEventListener('change', () => {
-            currentDay = parseInt(daySelector.value);
-            loadVocabularyData();
-        });
-
-        // Dropdown items per page
-        itemsPerPageSelect.addEventListener('change', () => {
-            itemsPerPage = parseInt(itemsPerPageSelect.value);
-            currentPage = 1;
-            updatePagination();
-            renderTable();
-        });
-
-        // Pencarian
-        searchInput.addEventListener('input', (e) => {
-            filterData(e.target.value);
-        });
-
-        // Pagination
-        prevPageBtn.addEventListener('click', () => {
-            if (currentPage > 1) {
-                currentPage--;
-                updatePagination();
-                renderTable();
+    const fadeInObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = 1;
+                entry.target.style.transform = 'translateY(0)';
             }
         });
+    }, { threshold: 0.1 });
 
-        nextPageBtn.addEventListener('click', () => {
-            if (currentPage < totalPages) {
-                currentPage++;
-                updatePagination();
-                renderTable();
-            }
-        });
+    fadeElements.forEach(el => {
+        el.style.opacity = 0;
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+        fadeInObserver.observe(el);
+    });
 
-        // Toggle menu mobile
-        burger.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            burger.classList.toggle('active');
-        });
-
-        // Setup column toggles setelah render tabel
-        setTimeout(setupColumnToggles, 0);
-    }
+    // Muat data awal
+    loadVocabulary();
 });
