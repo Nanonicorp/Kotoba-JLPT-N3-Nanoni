@@ -119,7 +119,7 @@ document.getElementById('nextPage').addEventListener('click', function() {
 });
 
 // Event listeners untuk memilih minggu
-document.getElementById('weekSelect').addEventListener('change', function() {
+document.getElementById('weekSelector').addEventListener('change', function() {
     currentWeek = parseInt(this.value);
     currentPage = 1; // Reset ke halaman pertama setiap minggu berubah
     loadVocabulary(); // Memuat data kosakata untuk minggu yang dipilih
