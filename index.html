@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nanoni - Daftar Kosakata JLPT N3</title>
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -14,7 +15,6 @@
             <nav>
                 <div class="logo">Nano<span>ni</span></div>
                 <ul class="nav-links">
-                    <div class="hamburger" onclick="toggleMenu()">☰</div>
                     <li><a href="https://nanonicorp.github.io/nanonicorp/">Beranda</a></li>
                     <li><a href="#vocabulary">Kosakata</a></li>
                     <li><a href="https://nanonicorp.github.io/nanonicorp/#classes">Kelas</a></li>
@@ -34,6 +34,11 @@
             <h2 class="section-title">Daftar Kosakata N3</h2>
             
             <div class="controls fade-in">
+                <!-- Search Input -->
+                <div class="search-group">
+                    <input type="text" id="searchInput" placeholder="Cari kotoba/kana...">
+                </div>
+
                 <!-- Dropdown Filter -->
                 <div class="filter-group">
                     <span>Minggu:</span>
@@ -45,7 +50,7 @@
                     </select>
 
                     <span>Hari:</span>
-                    <select id="pageSelector">
+                    <select id="daySelector">
                         <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>
@@ -57,31 +62,34 @@
                 <div class="items-per-page">
                     <span>Tampilkan per halaman:</span>
                     <select id="itemsPerPage">
-                        <option value="20">20</option>
+                        <option value="10">10</option>
+                        <option value="20" selected>20</option>
                         <option value="50">50</option>
                         <option value="100">100</option>
                     </select>
                 </div>
             </div>
 
+            <div class="error-message" id="errorMessage"></div>
+
             <div class="table-container fade-in">
                 <table id="vocabularyTable">
                     <thead>
                         <tr>
-                            <th>No</th>
-                            <th>
-                                <i class="fas fa-eye column-toggle" data-column="kotoba" title="Blur kolom ini"></i>
+                            <th class="col-no">No</th>
+                            <th class="col-kotoba">
+                                <i class="fas fa-eye column-toggle" data-column="kotoba" title="Sembunyikan kolom"></i>
                                 Kotoba                                 
                             </th>
-                            <th>
-                                <i class="fas fa-eye column-toggle" data-column="kana" title="Blur kolom ini"></i>
+                            <th class="col-kana">
+                                <i class="fas fa-eye column-toggle" data-column="kana" title="Sembunyikan kolom"></i>
                                 Kana 
                             </th>
-                            <th>
-                                <i class="fas fa-eye column-toggle" data-column="arti" title="Blur kolom ini"></i>
+                            <th class="col-arti">
+                                <i class="fas fa-eye column-toggle" data-column="arti" title="Sembunyikan kolom"></i>
                                 Arti 
                             </th>
-                            <th>Aksi</th>
+                            <th class="col-action">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -92,9 +100,9 @@
             
             <div class="pagination-container">
                 <div class="pagination-controls">
-                    <button id="prevPage"><i class="fas fa-chevron-left"></i> Sebelumnya</button>
-                    <span id="pageInfo" class="pagination-info">Halaman 1</span>
-                    <button id="nextPage">Berikutnya <i class="fas fa-chevron-right"></i></button>
+                    <button id="prevPage" disabled><i class="fas fa-chevron-left"></i> Sebelumnya</button>
+                    <span id="pageInfo" class="pagination-info">Halaman 1 dari 1</span>
+                    <button id="nextPage" disabled>Berikutnya <i class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
         </div>
@@ -118,18 +126,6 @@
         </div>
     </footer>
 
-    <script>
-        function toggleMenu() {
-            document.querySelector('.nav-links').classList.toggle('active');
-        }
-
-        const burger = document.getElementById('burger');
-        const navLinks = document.querySelector('.nav-links');
-
-        burger.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-        });
-    </script>
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>
