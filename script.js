@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Variabel global
     let vocabularyData = [];
     let filteredData = [];
@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
     initEventListeners();
     loadVocabularyData();
 
-    // Fungsi utama - Memuat data dari file JSON
     async function loadVocabularyData() {
         try {
             errorMessage.style.display = 'none';
@@ -51,7 +50,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Render tabel dengan pagination
     function renderTable() {
         const tbody = document.querySelector('#vocabularyTable tbody');
         tbody.innerHTML = '';
@@ -71,38 +69,35 @@ document.addEventListener('DOMContentLoaded', function() {
                 <td>${item.kotoba || '-'}</td>
                 <td>${item.kana || '-'}</td>
                 <td>${item.arti || '-'}</td>
-                <td><i class="fas fa-eye action-btn" title="Sembunyikan baris"></i></td>
+                <td><i class="fas fa-eye action-btn" title="Sembunyikan kolom baris ini"></i></td>
             `;
             tbody.appendChild(row);
-        });
 
-        setupActionButtons();  // Tambahkan listener untuk tombol aksi di baris
-    }
+            // Tambahkan event listener ke ikon aksi
+            row.querySelector('.action-btn').addEventListener('click', (e) => {
+                const targetRow = e.target.closest('tr');
+                const cells = targetRow.querySelectorAll('td');
 
-    // Tambahkan listener ke ikon aksi (mata) di tiap baris
-    function setupActionButtons() {
-        document.querySelectorAll('.action-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const row = btn.closest('tr');
-                const cells = row.querySelectorAll('td');
-
-                for (let i = 1; i <= 3; i++) {
+                // Blur kolom kotoba, kana, arti (kolom 1, 2, 3)
+                [1, 2, 3].forEach(i => {
                     cells[i].classList.toggle('blurred');
-                }
+                });
 
-                btn.classList.toggle('fa-eye');
-                btn.classList.toggle('fa-eye-slash');
+                // Toggle ikon mata
+                e.target.classList.toggle('fa-eye');
+                e.target.classList.toggle('fa-eye-slash');
             });
         });
+
+        // Atur kembali toggle ikon kolom setelah render
+        setupColumnToggles();
     }
 
-    // Dapatkan data pagination
     function getPaginatedData() {
         const start = (currentPage - 1) * itemsPerPage;
         return filteredData.slice(start, start + itemsPerPage);
     }
 
-    // Update informasi pagination
     function updatePagination() {
         totalPages = Math.ceil(filteredData.length / itemsPerPage);
         pageInfo.textContent = `Halaman ${currentPage} dari ${totalPages}`;
@@ -110,7 +105,6 @@ document.addEventListener('DOMContentLoaded', function() {
         nextPageBtn.disabled = currentPage >= totalPages;
     }
 
-    // Filter data berdasarkan pencarian
     function filterData(keyword) {
         if (!keyword) {
             filteredData = [...vocabularyData];
@@ -127,7 +121,6 @@ document.addEventListener('DOMContentLoaded', function() {
         renderTable();
     }
 
-    // Toggle kolom dari header
     function setupColumnToggles() {
         document.querySelectorAll('.column-toggle').forEach(icon => {
             icon.addEventListener('click', (e) => {
@@ -159,7 +152,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelector('#vocabularyTable tbody').innerHTML = '';
     }
 
-    // Event Listeners
     function initEventListeners() {
         weekSelector.addEventListener('change', () => {
             currentWeek = parseInt(weekSelector.value);
@@ -204,8 +196,5 @@ document.addEventListener('DOMContentLoaded', function() {
             navLinks.classList.toggle('active');
             burger.classList.toggle('active');
         });
-
-        // Toggle header kolom
-        setupColumnToggles();
     }
 });
