@@ -30,15 +30,15 @@ function renderTable() {
     
     currentItems.forEach((item, index) => {
         const row = document.createElement('tr');
-        const globalIndex = startIndex + index;
-        
-        row.innerHTML = `
-            <td>${globalIndex + 1}</td>
-            <td class="${blurredColumns.kotoba ? 'blurred' : ''}">${item.kotoba}</td>
-            <td class="${blurredColumns.kana ? 'blurred' : ''}">${item.kana}</td>
-            <td class="${blurredColumns.arti ? 'blurred' : ''}">${item.arti}</td>
-            <td><i class="fas fa-eye toggle-blur" data-index="${globalIndex}" title="Blur baris ini"></i></td>
-        `;
+        const displayIndex = startIndex + index;
+
+row.innerHTML = `
+    <td>${displayIndex + 1}</td>
+    <td class="${blurredColumns.kotoba ? 'blurred' : ''}">${item.kotoba}</td>
+    <td class="${blurredColumns.kana ? 'blurred' : ''}">${item.kana}</td>
+    <td class="${blurredColumns.arti ? 'blurred' : ''}">${item.arti}</td>
+    <td><i class="fas fa-eye toggle-blur" data-index="${index}" title="Blur baris ini"></i></td>
+`;
         
         tableBody.appendChild(row);
     });
