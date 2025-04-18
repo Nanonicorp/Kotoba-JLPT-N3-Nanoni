@@ -224,11 +224,11 @@ tr:hover {
 }
 
 /* Column Widths */
-.col-no { width: 5%; }
+.col-no { width: 8%; }
 .col-kotoba { width: 30%; }
-.col-kana { width: 35%; }
-.col-arti { width: 25%; }
-.col-action { width: 5%; }
+.col-kana { width: 30%; }
+.col-arti { width: 22%; }
+.col-action { width: 10%; }
 
 /* Pagination Styles */
 .pagination-container {
