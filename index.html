@@ -20,23 +20,13 @@
                     <li><a href="https://nanonicorp.github.io/nanonicorp/#classes">Kelas</a></li>
                 </ul>
                 <div class="burger" id="burger">
-  <span></span>
-  <span></span>
-  <span></span>
-</div>
-
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </nav>
         </div>
     </header>
-
-<!--    Hero Section
-    <section id="home" class="hero">
-        <div class="container fade-in">
-            <h1>Daftar Kosakata JLPT N3</h1>
-            <p>Pelajari kosakata penting untuk persiapan ujian JLPT N3 dengan metode unik Nanoni</p>
-            <a href="#vocabulary" class="btn">Lihat Kosakata</a>
-        </div>
-    </section> -->
 
     <!-- Vocabulary Section -->
     <section id="vocabulary" class="vocabulary">
@@ -44,6 +34,26 @@
             <h2 class="section-title">Daftar Kosakata N3</h2>
             
             <div class="controls fade-in">
+                <!-- Dropdown Filter -->
+                <div class="filter-group">
+                    <span>Minggu:</span>
+                    <select id="weekSelector">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                    </select>
+
+                    <span>Hari:</span>
+                    <select id="pageSelector">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                    </select>
+                </div>
+
+                <!-- Dropdown Items per Page -->
                 <div class="items-per-page">
                     <span>Tampilkan per halaman:</span>
                     <select id="itemsPerPage">
@@ -52,27 +62,8 @@
                         <option value="100">100</option>
                     </select>
                 </div>
-
-                <div class="week-page-selectors">
-    <span>Minggu:</span>
-    <select id="weekSelector">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-    </select>
-
-    <span>Hari:</span>
-    <select id="pageSelector">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-    </select>
-</div>
             </div>
 
-                     
             <div class="table-container fade-in">
                 <table id="vocabularyTable">
                     <thead>
@@ -128,16 +119,17 @@
     </footer>
 
     <script>
-    function toggleMenu() {
-        document.querySelector('.nav-links').classList.toggle('active');
-    }
-        const burger = document.getElementById('burger');
-  const navLinks = document.querySelector('.nav-links');
+        function toggleMenu() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        }
 
-  burger.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
-  });
-</script>
+        const burger = document.getElementById('burger');
+        const navLinks = document.querySelector('.nav-links');
+
+        burger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+    </script>
     <script src="script.js"></script>
 </body>
 </html>
