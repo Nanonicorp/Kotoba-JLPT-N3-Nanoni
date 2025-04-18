@@ -116,6 +116,19 @@ nav {
     gap: 15px;
 }
 
+.search-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.search-group input {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
 .filter-group, .items-per-page {
     display: flex;
     align-items: center;
