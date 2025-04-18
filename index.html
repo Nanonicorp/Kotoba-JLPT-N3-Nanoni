@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nanoni - Daftar Kosakata JLPT N3</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">Nano<span>ni</span></div>
+                <ul class="nav-links">
+                    <li><a href="#home">Beranda</a></li>
+                    <li><a href="#vocabulary">Kosakata</a></li>
+                    <li><a href="#classes">Kelas</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="container fade-in">
+            <h1>Daftar Kosakata JLPT N3</h1>
+            <p>Pelajari kosakata penting untuk persiapan ujian JLPT N3 dengan metode unik Nanoni</p>
+            <a href="#vocabulary" class="btn">Lihat Kosakata</a>
+        </div>
+    </section>
+
+    <!-- Vocabulary Section -->
+    <section id="vocabulary" class="vocabulary">
+        <div class="container">
+            <h2 class="section-title">Daftar Kosakata N3</h2>
+            
+            <div class="controls fade-in">
+                <div class="items-per-page">
+                    <span>Tampilkan per halaman:</span>
+                    <select id="itemsPerPage">
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="table-container fade-in">
+                <table id="vocabularyTable">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>
+                                Kotoba 
+                                <i class="fas fa-eye column-toggle" data-column="kotoba" title="Blur kolom ini"></i>
+                            </th>
+                            <th>
+                                Kana 
+                                <i class="fas fa-eye column-toggle" data-column="kana" title="Blur kolom ini"></i>
+                            </th>
+                            <th>
+                                Arti 
+                                <i class="fas fa-eye column-toggle" data-column="arti" title="Blur kolom ini"></i>
+                            </th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="pagination-container">
+                <div class="pagination-controls">
+                    <button id="prevPage"><i class="fas fa-chevron-left"></i> Sebelumnya</button>
+                    <span id="pageInfo" class="pagination-info">Halaman 1</span>
+                    <button id="nextPage">Berikutnya <i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="logo" style="color: white; margin-bottom: 20px;">Nano<span style="color: var(--accent);">ni</span></div>
+            <ul class="footer-links">
+                <li><a href="#home">Beranda</a></li>
+                <li><a href="#vocabulary">Kosakata</a></li>
+                <li><a href="#classes">Kelas</a></li>
+            </ul>
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-whatsapp"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+            <p class="copyright">© 2023 Nanoni. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
