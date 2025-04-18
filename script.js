@@ -23,15 +23,11 @@ async function loadVocabulary() {
 function renderTable() {
     const tableBody = document.querySelector('#vocabularyTable tbody');
     tableBody.innerHTML = '';
-    
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const currentItems = vocabularyData.slice(startIndex, endIndex);
-    
-    currentItems.forEach((item, index) => {
+
+    vocabularyData.forEach((item, index) => {
         const row = document.createElement('tr');
-        const globalIndex = startIndex + index;
-        
+        const globalIndex = ((currentPage - 1) * itemsPerPage) + index;
+
         row.innerHTML = `
             <td>${globalIndex + 1}</td>
             <td class="${blurredColumns.kotoba ? 'blurred' : ''}">${item.kotoba}</td>
@@ -39,21 +35,14 @@ function renderTable() {
             <td class="${blurredColumns.arti ? 'blurred' : ''}">${item.arti}</td>
             <td><i class="fas fa-eye toggle-blur" data-index="${globalIndex}" title="Blur baris ini"></i></td>
         `;
-        
+
         tableBody.appendChild(row);
     });
-    
-    // Update info halaman
-    document.getElementById('pageInfo').textContent = `Halaman ${currentPage} dari ${Math.ceil(vocabularyData.length / itemsPerPage)}`;
-    
-    // Nonaktifkan tombol sebelumnya jika di halaman pertama
-    document.getElementById('prevPage').disabled = currentPage === 1;
-    
-    // Nonaktifkan tombol berikutnya jika di halaman terakhir
-    document.getElementById('nextPage').disabled = currentPage === Math.ceil(vocabularyData.length / itemsPerPage);
-    
-    // Update icon kolom toggle
-    updateColumnToggleIcons();
+
+    // Info halaman diubah jadi statis atau dari metadata kalau kamu punya
+    document.getElementById('pageInfo').textContent = `Halaman ${currentPage}`;
+
+    // Tombol navigasi bisa diatur manual atau lewat logika metadata total halaman (jika tersedia)
 }
 
 // Fungsi untuk update icon toggle kolom
