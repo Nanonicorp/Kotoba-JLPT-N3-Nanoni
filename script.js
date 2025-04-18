@@ -8,6 +8,13 @@ let blurredColumns = {
     arti: false
 };
 
+const burger = document.getElementById('burger');
+  const navLinks = document.querySelector('.nav-links');
+
+  burger.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+  });
+
 // Fungsi untuk memuat data kosakata
 async function loadVocabulary() {
     try {
