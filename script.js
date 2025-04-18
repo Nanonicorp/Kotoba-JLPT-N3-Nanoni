@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Variabel global
     let vocabularyData = [];
+    let filteredData = [];
     let currentWeek = 1;
     let currentDay = 1;
     let currentPage = 1;
@@ -11,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const weekSelector = document.getElementById('weekSelector');
     const daySelector = document.getElementById('daySelector');
     const itemsPerPageSelect = document.getElementById('itemsPerPage');
+    const searchInput = document.getElementById('searchInput');
     const prevPageBtn = document.getElementById('prevPage');
     const nextPageBtn = document.getElementById('nextPage');
     const pageInfo = document.getElementById('pageInfo');
@@ -34,7 +36,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             vocabularyData = await response.json();
-            currentPage = 1; // Reset ke halaman 1 saat data berubah
+            filteredData = [...vocabularyData];
+            
+            // Simpan ke cache
+            const cacheKey = `week${currentWeek}day${currentDay}`;
+            localStorage.setItem(cacheKey, JSON.stringify(vocabularyData));
+            
+            // Reset pencarian dan halaman
+            searchInput.value = '';
+            currentPage = 1;
+            updatePagination();
             renderTable();
         } catch (error) {
             console.error("Error:", error);
@@ -47,19 +58,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const tbody = document.querySelector('#vocabularyTable tbody');
         tbody.innerHTML = '';
         
-        if (vocabularyData.length === 0) {
+        if (filteredData.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5" class="no-data">Tidak ada data</td></tr>';
             return;
         }
         
-        totalPages = Math.ceil(vocabularyData.length / itemsPerPage);
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        const paginatedData = vocabularyData.slice(startIndex, startIndex + itemsPerPage);
+        const paginatedData = getPaginatedData();
         
         paginatedData.forEach((item, index) => {
+            const globalIndex = (currentPage - 1) * itemsPerPage + index + 1;
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>${startIndex + index + 1}</td>
+                <td>${globalIndex}</td>
                 <td>${item.kotoba || '-'}</td>
                 <td>${item.kana || '-'}</td>
                 <td>${item.arti || '-'}</td>
@@ -67,15 +77,65 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             tbody.appendChild(row);
         });
-        
-        updatePagination();
+    }
+
+    // Dapatkan data pagination
+    function getPaginatedData() {
+        const start = (currentPage - 1) * itemsPerPage;
+        return filteredData.slice(start, start + itemsPerPage);
     }
 
     // Update informasi pagination
     function updatePagination() {
+        totalPages = Math.ceil(filteredData.length / itemsPerPage);
         pageInfo.textContent = `Halaman ${currentPage} dari ${totalPages}`;
         prevPageBtn.disabled = currentPage <= 1;
         nextPageBtn.disabled = currentPage >= totalPages;
+    }
+
+    // Filter data berdasarkan pencarian
+    function filterData(keyword) {
+        if (!keyword) {
+            filteredData = [...vocabularyData];
+        } else {
+            const lowerKeyword = keyword.toLowerCase();
+            filteredData = vocabularyData.filter(item => 
+                (item.kotoba && item.kotoba.toLowerCase().includes(lowerKeyword)) ||
+                (item.kana && item.kana.toLowerCase().includes(lowerKeyword))
+            );
+        }
+        
+        currentPage = 1;
+        updatePagination();
+        renderTable();
+    }
+
+    // Toggle kolom
+    function setupColumnToggles() {
+        document.querySelectorAll('.column-toggle').forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                const column = e.target.dataset.column;
+                const columnIndex = getColumnIndex(column);
+                
+                document.querySelectorAll(`tbody td:nth-child(${columnIndex})`).forEach(cell => {
+                    cell.classList.toggle('blurred');
+                });
+                
+                // Ganti ikon
+                e.target.classList.toggle('fa-eye');
+                e.target.classList.toggle('fa-eye-slash');
+            });
+        });
+    }
+
+    // Dapatkan index kolom berdasarkan nama
+    function getColumnIndex(columnName) {
+        const columns = {
+            'kotoba': 2,
+            'kana': 3,
+            'arti': 4
+        };
+        return columns[columnName] || 0;
     }
 
     // Tampilkan error
@@ -104,14 +164,21 @@ document.addEventListener('DOMContentLoaded', function() {
         // Dropdown items per page
         itemsPerPageSelect.addEventListener('change', () => {
             itemsPerPage = parseInt(itemsPerPageSelect.value);
-            currentPage = 1; // Reset ke halaman 1 saat mengubah items per page
+            currentPage = 1;
+            updatePagination();
             renderTable();
         });
 
-        // Tombol pagination
+        // Pencarian
+        searchInput.addEventListener('input', (e) => {
+            filterData(e.target.value);
+        });
+
+        // Pagination
         prevPageBtn.addEventListener('click', () => {
             if (currentPage > 1) {
                 currentPage--;
+                updatePagination();
                 renderTable();
             }
         });
@@ -119,6 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
         nextPageBtn.addEventListener('click', () => {
             if (currentPage < totalPages) {
                 currentPage++;
+                updatePagination();
                 renderTable();
             }
         });
@@ -128,5 +196,8 @@ document.addEventListener('DOMContentLoaded', function() {
             navLinks.classList.toggle('active');
             burger.classList.toggle('active');
         });
+
+        // Setup column toggles setelah render tabel
+        setTimeout(setupColumnToggles, 0);
     }
 });
