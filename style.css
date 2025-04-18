@@ -306,10 +306,31 @@ footer {
     animation: fadeIn 1s ease-out forwards;
 }
 
+.hamburger {
+    display: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--dark);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .nav-links {
         display: none;
+        flex-direction: column;
+        gap: 10px;
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        background-color: white;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        z-index: 999;
+    }
+
+    .nav-links.active {
+        display: flex;
     }
     
     .hero h1 {
