@@ -176,6 +176,7 @@ button:disabled {
 table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
     margin-top: 20px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     border-radius: 10px;
@@ -188,8 +189,9 @@ th, td {
     text-align: left;
     border-bottom: 1px solid #ddd;
     transition: all 0.3s ease;
+    word-wrap: break-word;
+    white-space: normal;
 }
-
 th {
     background-color: var(--secondary);
     color: white;
@@ -222,11 +224,11 @@ tr:hover {
 }
 
 /* Column Widths */
-.col-no { width: 50px; }
+.col-no { width: 5%; }
 .col-kotoba { width: 30%; }
-.col-kana { width: 30%; }
-.col-arti { width: 30%; }
-.col-action { width: 70px; }
+.col-kana { width: 35%; }
+.col-arti { width: 25%; }
+.col-action { width: 5%; }
 
 /* Pagination Styles */
 .pagination-container {
