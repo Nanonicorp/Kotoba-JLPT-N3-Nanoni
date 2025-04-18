@@ -114,6 +114,7 @@ nav {
 
 /* Vocabulary Section */
 .vocabulary {
+    margin-top: 40px; /* Tambahkan ini */
     padding: 80px 0;
     background-color: white;
 }
