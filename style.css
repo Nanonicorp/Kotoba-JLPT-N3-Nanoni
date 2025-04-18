@@ -5,6 +5,8 @@
     --accent: #F1C40F;
     --light: #F5F5F5;
     --dark: #2C3E50;
+    --error: #E74C3C;
+    --success: #2ECC71;
 }
 
 * {
@@ -24,19 +26,6 @@ body {
     line-height: 1.6;
 }
 
-.burger {
-    display: none;
-    flex-direction: column;
-    cursor: pointer;
-    gap: 5px;
-}
-
-.burger span {
-    width: 25px;
-    height: 3px;
-    background-color: var(--dark);
-    transition: all 0.3s ease;
-}
 .container {
     width: 90%;
     max-width: 1200px;
@@ -90,44 +79,24 @@ nav {
     color: var(--primary);
 }
 
-.btn {
-    display: inline-block;
-    background-color: var(--primary);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background-color 0.3s;
+/* Burger Menu */
+.burger {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    gap: 5px;
 }
 
-.btn:hover {
-    background-color: #c0392b;
-}
-
-/* Hero Section */
-.hero {
-    padding: 150px 0 80px;
-    text-align: center;
-    background: linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(52, 152, 219, 0.1) 100%);
-}
-
-.hero h1 {
-    font-size: 48px;
-    margin-bottom: 20px;
-    color: var(--primary);
-}
-
-.hero p {
-    font-size: 20px;
-    max-width: 700px;
-    margin: 0 auto 30px;
-    color: var(--dark);
+.burger span {
+    width: 25px;
+    height: 3px;
+    background-color: var(--dark);
+    transition: all 0.3s ease;
 }
 
 /* Vocabulary Section */
 .vocabulary {
-    padding: 80px 0;
+    padding: 100px 0 80px;
     background-color: white;
 }
 
@@ -147,7 +116,20 @@ nav {
     gap: 15px;
 }
 
-.items-per-page {
+.search-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+.search-group input {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
+.filter-group, .items-per-page {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -181,8 +163,13 @@ button:disabled {
     cursor: not-allowed;
 }
 
-.pagination-info {
-    font-weight: 500;
+/* Error Message */
+.error-message {
+    color: var(--error);
+    padding: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+    display: none;
 }
 
 /* Table Styles */
@@ -201,20 +188,19 @@ th, td {
     text-align: left;
     border-bottom: 1px solid #ddd;
     transition: all 0.3s ease;
-    position: relative;
 }
 
 th {
     background-color: var(--secondary);
     color: white;
     font-weight: 600;
+    position: relative;
 }
 
 .column-toggle {
-    position: absolute;
-    right: 10px;
     cursor: pointer;
     transition: color 0.3s;
+    margin-left: 5px;
 }
 
 .column-toggle:hover {
@@ -229,21 +215,18 @@ tr:hover {
     background-color: #f1f1f1;
 }
 
-.toggle-blur {
-    color: var(--dark);
-    cursor: pointer;
-    transition: color 0.3s;
-}
-
-.toggle-blur:hover {
-    color: var(--primary);
-}
-
 .blurred {
     color: transparent;
     text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
     user-select: none;
 }
+
+/* Column Widths */
+.col-no { width: 50px; }
+.col-kotoba { width: 30%; }
+.col-kana { width: 30%; }
+.col-arti { width: 30%; }
+.col-action { width: 70px; }
 
 /* Pagination Styles */
 .pagination-container {
@@ -257,6 +240,10 @@ tr:hover {
     display: flex;
     align-items: center;
     gap: 15px;
+}
+
+.pagination-info {
+    font-weight: 500;
 }
 
 /* Footer */
@@ -318,104 +305,65 @@ footer {
     animation: fadeIn 1s ease-out forwards;
 }
 
-.hamburger {
-    display: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: var(--dark);
-}
-
 /* Responsive */
 @media (max-width: 768px) {
     .nav-links {
         display: none;
-        flex-direction: column;
-        gap: 10px;
         position: absolute;
-        top: 60px;
-        right: 20px;
+        top: 70px;
+        left: 0;
+        right: 0;
         background-color: white;
         padding: 20px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
-        z-index: 999;
+        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-links li {
+        margin-left: 0;
     }
 
     .burger {
         display: flex;
     }
 
-    .nav-links.active {
-        display: flex;
-        flex-direction: column;
-        background-color: white;
-        position: absolute;
-        top: 100%;
-        right: 0;
-        left: 0;
-        padding: 20px;
-        box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-    }
-    
-    .hero h1 {
-        font-size: 36px;
-    }
-    
-    .hero p {
-        font-size: 18px;
-    }
-    
     .controls {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: stretch;
     }
-    
+
+    .filter-group, .items-per-page {
+        justify-content: space-between;
+    }
+
+    /* Adjust table for mobile */
     th, td {
         padding: 10px 8px;
         font-size: 14px;
     }
-    
-    .column-toggle {
-        position: static;
-        display: block;
-        margin-left: 5px;
+
+    .col-kotoba, .col-kana, .col-arti {
+        width: auto;
     }
-    
+
+    /* Allow text wrapping in cells */
+    #vocabularyTable td {
+        white-space: normal;
+    }
+}
+
+@media (max-width: 480px) {
+    .section-title {
+        font-size: 28px;
+    }
+
     .pagination-controls {
         flex-direction: column;
         gap: 10px;
-    }
-
-    /* Atur lebar kolom spesifik untuk mobile */
-    #vocabularyTable th:nth-child(1), 
-    #vocabularyTable td:nth-child(1) {
-        width: 50px; /* Lebar kolom No */
-    }
-    
-    #vocabularyTable th:nth-child(2), 
-    #vocabularyTable td:nth-child(2) {
-        width: 100px; /* Lebar kolom Kotoba */
-    }
-    
-    #vocabularyTable th:nth-child(3), 
-    #vocabularyTable td:nth-child(3) {
-        width: 100px; /* Lebar kolom Kana */
-    }
-    
-    #vocabularyTable th:nth-child(4), 
-    #vocabularyTable td:nth-child(4) {
-        width: 120px; /* Lebar kolom Arti */
-    }
-    
-    #vocabularyTable th:nth-child(5), 
-    #vocabularyTable td:nth-child(5) {
-        width: 60px; /* Lebar kolom Aksi */
-    }
-    
-    /* Tambahkan ini agar teks tidak overflow */
-    #vocabularyTable td {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
 }
