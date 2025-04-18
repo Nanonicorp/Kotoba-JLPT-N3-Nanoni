@@ -76,6 +76,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
         setupColumnToggles();
         setupActionButtons();
+
+        // Tambahkan ini di bagian akhir renderTable()
+document.querySelectorAll('.action-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const row = btn.closest('tr');
+        const cells = row.querySelectorAll('td');
+
+        // Mulai dari index 1 karena index 0 adalah kolom No
+        for (let i = 1; i <= 3; i++) {
+            cells[i].classList.toggle('blurred');
+        }
+
+        // Toggle icon
+        btn.classList.toggle('fa-eye');
+        btn.classList.toggle('fa-eye-slash');
+    });
+});
     }
 
     function getPaginatedData() {
