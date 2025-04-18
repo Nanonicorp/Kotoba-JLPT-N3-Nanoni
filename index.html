@@ -112,6 +112,12 @@
     function toggleMenu() {
         document.querySelector('.nav-links').classList.toggle('active');
     }
+        const burger = document.getElementById('burger');
+  const navLinks = document.querySelector('.nav-links');
+
+  burger.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+  });
 </script>
     <script src="script.js"></script>
 </body>
