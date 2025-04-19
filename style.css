@@ -228,7 +228,7 @@ tr:hover {
 .col-kotoba { width: 30%; }
 .col-kana { width: 30%; }
 .col-arti { width: 30%; }
-.col-action { width: 80px; }
+.col-action { width: 5%; }
 
 /* Pagination Styles */
 .pagination-container {
