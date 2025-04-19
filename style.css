@@ -225,9 +225,9 @@ tr:hover {
 
 /* Column Widths */
 .col-no { width: 35px; }
-.col-kotoba { width: 30%; }
+.col-kotoba { width: 25%; }
 .col-kana { width: 30%; }
-.col-arti { width: 30%; }
+.col-arti { width: 35%; }
 .col-action { width: 55px; }
 
 /* Pagination Styles */
